@@ -8,8 +8,7 @@ let
     inherit system overlays;
   };
 in
-rec {
-  default = goShell;
+{
   rustShells =
     let
       commonShellHook = ''
