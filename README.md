@@ -5,8 +5,9 @@
     h2-overlay = {
       url = "git+ssh://git@github.com/nhatanh-h2/h2-overlay-flake?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -28,9 +29,9 @@
       in
       {
         packages.default = pkgs.mkDerivation {...};
-        devShells.default = pkgs.mkShell {...};
 
-        # or using a predefined shell as default
+        devShells.default = pkgs.mkShell {...};
+        # or using one of the predefined shells as default
         # devShells.default = h2-overlay.devShells.${system}.goShell;
         # devShells.default = h2-overlay.devShells.${system}.rustShells.stable;
       }
