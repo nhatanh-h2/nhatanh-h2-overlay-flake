@@ -9,7 +9,7 @@
 let
   # the hash of buildMavenPackage's vendor directory's content can differ depending on the platform
   mvnDepsHashes = {
-    "86_64-linux" = "sha256-UDROqsPBACXCVCEdPdjWSFBSB/kfV57uc06Bb1o4GP8=";
+    "x86_64-linux" = "sha256-UDROqsPBACXCVCEdPdjWSFBSB/kfV57uc06Bb1o4GP8=";
     "aarch64-darwin" = "sha256-PiLpJponpJUXakdno+KGxzDvZG6jYRPp3t5q/G5JX+M=";
   };
 in
