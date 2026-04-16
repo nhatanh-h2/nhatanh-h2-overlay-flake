@@ -1,13 +1,6 @@
 {
-  overlays,
-  system,
-  nixpkgs,
+  pkgs,
 }:
-let
-  pkgs = import nixpkgs {
-    inherit system overlays;
-  };
-in
 {
   rustShells =
     let

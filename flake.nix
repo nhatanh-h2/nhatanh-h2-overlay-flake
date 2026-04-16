@@ -18,9 +18,12 @@
     }@inputs:
     flake-utils.lib.eachDefaultSystem (system: {
       devShells = import ./devShells {
-        overlays = [ self.outputs.overlays.${system}.default ];
-        inherit system nixpkgs;
+        pkgs = self.outputs.packages.${system}.pkgs;
       };
       overlays.default = nixpkgs.lib.composeExtensions inputs.fenix.overlays.default (import ./overlay.nix);
+      packages.pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ self.outputs.overlays.${system}.default ];
+      };
     });
 }
