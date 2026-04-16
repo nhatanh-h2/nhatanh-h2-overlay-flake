@@ -26,6 +26,8 @@
           inherit system;
           overlays = [ h2-overlay.overlays.default ];
         };
+        # overlaid nixpkgs is also exposed as a package in the flake's output:
+        # pkgs = h2-overlay.packages.${system}.pkgs;
       in
       {
         packages.default = pkgs.mkDerivation {...};
