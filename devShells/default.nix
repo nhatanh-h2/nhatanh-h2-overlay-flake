@@ -26,6 +26,8 @@
         grcov
         cargo-edit
         cargo-sort
+        cargo-machete
+        cargo-llvm-cov
         protobuf
       ];
     in
