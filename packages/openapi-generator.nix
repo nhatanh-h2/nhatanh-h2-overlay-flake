@@ -9,8 +9,8 @@
 let
   # the hash of buildMavenPackage's vendor directory's content can differ depending on the platform
   mvnDepsHashes = {
-    "x86_64-linux" = "sha256-UDROqsPBACXCVCEdPdjWSFBSB/kfV57uc06Bb1o4GP8=";
-    "aarch64-darwin" = "sha256-PiLpJponpJUXakdno+KGxzDvZG6jYRPp3t5q/G5JX+M=";
+    "x86_64-linux" = "sha256-2qTKf8CCR+hNKvMdIW99gQOyVc3GwT4gSnSx6dPYXmQ=";
+    "aarch64-darwin" = lib.fakeHash;
   };
 in
 maven.buildMavenPackage rec {
@@ -23,8 +23,9 @@ maven.buildMavenPackage rec {
     owner = "OpenAPITools";
     repo = "openapi-generator";
     # Fetch the specific branch
-    rev = "7ce0096e73eccdf33af2e4cb8481efa4ceb0ab3f";
-    sha256 = "sha256-AC7mKMsZohsuaQ03b5KZP18Puu9gh4yQMbSPvLWdXN0=";
+    tag = "v7.20.0";
+    # rev = "7ce0096e73eccdf33af2e4cb8481efa4ceb0ab3f";
+    sha256 = "sha256-/rr3TY+vNo0gnK0Ei2nirkKknsOfNPP32LjdkosjM4w=";
   };
 
   mvnParameters = toString [
