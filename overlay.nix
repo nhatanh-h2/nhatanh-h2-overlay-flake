@@ -14,7 +14,5 @@ final: prev: {
     oapi-codegen = prev.oapi-codegen;
   };
 
-  gofumpt = prev.callPackage ./packages/gofumpt.nix {
-    gofumpt = prev.gofumpt;
-  };
+  gofumpt = prev.callPackage ./packages/gofumpt.nix { };
 }
