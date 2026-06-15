@@ -5,16 +5,16 @@
 }:
 sea-orm-cli.overrideAttrs (
   final: old: {
-    version = "1.1.19";
+    version = "1.1.20";
     src = fetchCrate {
       pname = old.pname;
-      version = "1.1.19";
-      hash = "sha256-dsise5MDhR4pcD3ZWDUzTG0Q4Fg/VdKw2Q59/g6BabA=";
+      version = "1.1.20";
+      hash = "sha256-n7QkCnMF15UMLPPEF093ylzzDESGKKG/q4Y2jvdTcUo=";
     };
     cargoDeps = rustPlatform.fetchCargoVendor {
       name = "${final.pname}-vendor.tar.gz";
       src = final.src;
-      hash = "sha256-38KIJYwRvVmChGSJwaRRWbb/HPuuTp/qnvXpo3xjRpE=";
+      hash = "sha256-itn1i2klZeZQIQLF/lqaqTly1QqbtUgZhqHmAzrKn38=";
     };
   }
 )
