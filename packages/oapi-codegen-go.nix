@@ -1,12 +1,12 @@
 { oapi-codegen, fetchFromGitHub }:
 
 oapi-codegen.overrideAttrs {
-  version = "2.6.0";
+  version = "v2.8.0";
   src = fetchFromGitHub {
-    owner = "deepmap";
+    owner = "oapi-codegen";
     repo = "oapi-codegen";
-    rev = "efb2df3da288461287f23e49716e72025e655bcc";
-    hash = "sha256-VUSqwc6TsMhry4BEj9nMkSaKg9PNMYGktwc0CA3yx6c=";
+    rev = "de2d8b2b0afb287198554eb305bb0d2687d26a85";
+    hash = "sha256-CrHseuO3gNFTJgP9b8Tec7qJ/jvmKgm3ZwiMBrAcIq8=";
   };
-  vendorHash = "sha256-vgSMGi0mnGX/Hwxu/XalIXLCbm/L4CwQfIf7DEJVk1E=";
+  vendorHash = "sha256-Oom7OcyWv+iXDb1AUsHXJ74eMYN9L7InrNuq4pfggYA=";
 }
