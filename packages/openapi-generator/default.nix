@@ -9,7 +9,7 @@
 let
   # the hash of buildMavenPackage's vendor directory's content can differ depending on the platform
   mvnDepsHashes = {
-    "x86_64-linux" = "sha256-Hpo39OkzYFcqIpqPS/2X1PMKdky4U9rY7uOykIAoDus=";
+    "x86_64-linux" = "sha256-P+zAnXcnl0vdAlwbesPbB+w5gwYe1IMiGLAOIF9CJ2c=";
     "aarch64-darwin" = lib.fakeHash;
   };
 in
@@ -17,17 +17,25 @@ maven.buildMavenPackage rec {
   pname = "openapi-generator-cli";
   # Versioning based on the branch name for clarity.
   # You could use a date or commit hash if preferred.
-  version = "master";
+  version = "v7.26.0-SNAPSHOT";
 
   src = fetchFromGitHub {
     owner = "OpenAPITools";
     repo = "openapi-generator";
     # Fetch the specific branch
-    tag = "v7.23.0";
-    # rev = "7ce0096e73eccdf33af2e4cb8481efa4ceb0ab3f";
-    sha256 = "sha256-IMfI/V6F61YQrxb9OQ0Qb627CSMiPUVr1pgwLhSvM8g=";
+    # tag = "${version}";
+    rev = "b8bd5bee4da89286bf91bcb9bdab4d5a5a085fe0";
+    sha256 = "sha256-6qz2m7Oc9kf2o76SKfDnNZ+VcCzU/eNMijkgj/m7mkM=";
   };
 
+  patches = [
+    # Achieve reproducible mvnHash by pinning develocity plugin.
+    # (fetchpatch {
+    #   url = "https://github.com/OpenAPITools/openapi-generator/commit/ff66e1bc7fe33dcee89de7296eb7bcd5e2a11cc6.patch";
+    #   hash = "sha256-E1VgtaIW1V+8ch2RpW850fVNl5Iqitjog+0b8DKFgZw=";
+    # })
+    ./develocity-pinned.patch
+  ];
   mvnParameters = toString [
     "-Ddevelocity.cache.local.enabled=false"
     "-Ddevelocity.cache.remote.enabled=false"
@@ -35,7 +43,11 @@ maven.buildMavenPackage rec {
     # "-Ddevelocity.scan.uploadInBackground=false"
     # The original derivation used -DskipTests, which is often needed
     "-DskipTests=true"
+    "-Duser.home=$TMPDIR"
   ];
+
+  doCheck = false;
+
   mvnHash =
     mvnDepsHashes.${system}
       or (lib.warn "This platform (${system}) doesn't have any known mvnHash for ${pname}" lib.fakeHash);
