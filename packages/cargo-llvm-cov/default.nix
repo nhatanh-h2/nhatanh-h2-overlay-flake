@@ -10,7 +10,7 @@ let
   pname = "cargo-llvm-cov";
   cargoLock = fetchurl {
     name = "Cargo.lock";
-    url = "https://crates.io/api/v1/crates/${pname}/${version}/download";
+    url = "https://static.crates.io/crates/${pname}/${version}/download";
     sha256 = "sha256-RAXJT037wcxk/ODd46XVZrdAOccnmYJah3zK5Srlht0=";
     downloadToTemp = true;
     postFetch = ''

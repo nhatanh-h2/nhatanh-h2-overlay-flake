@@ -2,7 +2,7 @@
   description = "Overlay flake";
 
   nixConfig = {
-    extra-substituters = "https://nhatanh-h2.cachix.com";
+    extra-substituters = "https://nhatanh-h2.cachix.org";
   };
 
   inputs = {
