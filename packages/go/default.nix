@@ -7,7 +7,7 @@
   buildPackages,
 }:
 let
-  version = "1.26.2";
+  version = "1.27.1";
   goBootstrap = buildPackages.callPackage ./bootstrap.nix { };
 in
 go.overrideAttrs (
@@ -16,7 +16,7 @@ go.overrideAttrs (
     inherit version;
     src = builtins.fetchurl {
       url = "https://go.dev/dl/go${version}.src.tar.gz";
-      sha256 = "sha256:0fyldyyrval29zngyp9pdlxfdvq2i1m95cxjdx1yk5ksjjvfp49f";
+      sha256 = "sha256:1c9qn8m8cpxldnw97mhj2g5f7w2l5hzij9s62sv1dn96w6x8lh2f";
     };
     patches = [
       (replaceVars ./iana-etc.patch {
