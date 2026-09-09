@@ -29,8 +29,8 @@ jobs:
 
       - name: Build every shell for this system
         run: |
-          attrs=$(nix eval --json ".#devShells.${{ matrix.system }}" --apply builtins.attrNames)
-          for name in $(echo "$attrs" | jq -r '.[]'); do
+          attrs=".#devShells.${{ matrix.system }}.goShell .#devShells.${{ matrix.system }}.rustShells.stable .#devShells.${{ matrix.system }}.rustShells.nightly"
+          for name in $(echo "$attrs"); do
             echo "::group::Building $name"
             nix build ".#devShells.${{ matrix.system }}.$name" -L
             echo "::endgroup::"
