@@ -6,13 +6,6 @@
   makeWrapper,
   system,
 }:
-let
-  # the hash of buildMavenPackage's vendor directory's content can differ depending on the platform
-  mvnDepsHashes = {
-    "x86_64-linux" = "sha256-P+zAnXcnl0vdAlwbesPbB+w5gwYe1IMiGLAOIF9CJ2c=";
-    "aarch64-darwin" = lib.fakeHash;
-  };
-in
 maven.buildMavenPackage rec {
   pname = "openapi-generator-cli";
   # Versioning based on the branch name for clarity.
@@ -48,9 +41,7 @@ maven.buildMavenPackage rec {
 
   doCheck = false;
 
-  mvnHash =
-    mvnDepsHashes.${system}
-      or (lib.warn "This platform (${system}) doesn't have any known mvnHash for ${pname}" lib.fakeHash);
+  mvnHash = "sha256-P+zAnXcnl0vdAlwbesPbB+w5gwYe1IMiGLAOIF9CJ2c=";
 
   # Tools needed on the build machine itself (for wrapper script)
   nativeBuildInputs = [ makeWrapper ];
