@@ -3,6 +3,9 @@
 
   nixConfig = {
     extra-substituters = "https://nhatanh-h2.cachix.org";
+    extra-trusted-public-keys = [
+      "nhatanh-h2.cachix.org-1:iNzE+GWK6MCVXo+equPTQj2OCMmclhx6xTakVy3NXbk="
+    ];
   };
 
   inputs = {
