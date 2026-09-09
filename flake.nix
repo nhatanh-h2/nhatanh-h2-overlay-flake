@@ -1,5 +1,10 @@
 {
   description = "Overlay flake";
+
+  nixConfig = {
+    extra-substituters = "https://nhatanh-h2.cachix.com";
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
