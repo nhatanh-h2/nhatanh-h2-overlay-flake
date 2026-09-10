@@ -17,8 +17,8 @@ maven.buildMavenPackage rec {
     repo = "openapi-generator";
     # Fetch the specific branch
     # tag = "${version}";
-    rev = "b8bd5bee4da89286bf91bcb9bdab4d5a5a085fe0";
-    sha256 = "sha256-6qz2m7Oc9kf2o76SKfDnNZ+VcCzU/eNMijkgj/m7mkM=";
+    rev = "2ebcc6c700a2c8e658b25a2e58e1d7145333dff8";
+    sha256 = "sha256-RyIGgk0IPFH4SSHTdmLyEj8l9qS2jc1XzOiloGXpmD0=";
   };
 
   patches = [
