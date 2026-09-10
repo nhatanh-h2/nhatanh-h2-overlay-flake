@@ -48,7 +48,7 @@ Currently the substituter in use is the main maintainer's own Cachix cache which
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ nhatanh-h2-overlay.overlays.default ];
+          overlays = [ nhatanh-h2-overlay.overlays.${system}.default ];
         };
         # overlaid nixpkgs is also exposed as a package in the flake's output:
         # pkgs = nhatanh-h2-overlay.packages.${system}.pkgs;
