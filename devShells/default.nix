@@ -1,6 +1,29 @@
 {
   pkgs,
 }:
+let
+  # Wraps a shell derivation with a `withPackages` helper so consumers can write
+  #   shell.withPackages [ pkgs.cachix ]
+  #   shell.withPackages (pkgs: [ pkgs.cachix ])   # pkgs here is the overlaid nixpkgs
+  # instead of spelling out the `overrideAttrs` dance. The result is wrapped again,
+  # so calls can be chained.
+  withPackagesHelper =
+    shell:
+    shell
+    // {
+      withPackages =
+        extraPackages:
+        withPackagesHelper (
+          shell.overrideAttrs (old: {
+            buildInputs =
+              old.buildInputs or [ ]
+              ++ (if builtins.isFunction extraPackages then extraPackages pkgs else extraPackages);
+          })
+        );
+    };
+
+  mkShell = args: withPackagesHelper (pkgs.mkShell args);
+in
 {
   rustShells =
     let
@@ -32,7 +55,7 @@
       ];
     in
     {
-      nightly = pkgs.mkShell {
+      nightly = mkShell {
         shellHook = commonShellHook;
         buildInputs =
           with pkgs;
@@ -41,7 +64,7 @@
           ]
           ++ commonBuildInputs;
       };
-      stable = pkgs.mkShell {
+      stable = mkShell {
         shellHook = commonShellHook;
         buildInputs =
           with pkgs;
@@ -51,7 +74,7 @@
           ++ commonBuildInputs;
       };
     };
-  goShell = pkgs.mkShell {
+  goShell = mkShell {
     buildInputs = with pkgs; [
       go
       gopls

@@ -60,8 +60,13 @@ Currently the substituter in use is the main maintainer's own Cachix cache which
         # or using one of the predefined shells as default
         # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell;
         # devShells.default = nhatanh-h2-overlay.devShells.${system}.rustShells.stable;
-        # it's also possible to customize your own shell based on a predefined shell:
-        # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell.overrideAttrs (old: { buildInputs = old.buildInputs ++ [ pkgs.cachix ]; });
+        # it's also possible to customize your own shell based on a predefined shell,
+        # every predefined shell has a `withPackages` helper that appends to its buildInputs:
+        # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell.withPackages [ pkgs.cachix ];
+        # it also accepts a function taking the overlaid nixpkgs, and the result can be chained:
+        # devShells.default = (nhatanh-h2-overlay.devShells.${system}.goShell.withPackages (pkgs: [ pkgs.cachix ])).withPackages [ pkgs.jq ];
+        # or the escape hatch, for anything beyond adding packages:
+        # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell.overrideAttrs (old: { shellHook = old.shellHook + "..."; });
       }
     );
 }
