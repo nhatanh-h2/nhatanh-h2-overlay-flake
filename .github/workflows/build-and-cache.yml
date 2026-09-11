@@ -19,6 +19,7 @@ jobs:
           - system: x86_64-linux
             runner: ubuntu-latest
     runs-on: ${{ matrix.runner }}
+    environment: Build
     steps:
       - uses: actions/checkout@v4
 
