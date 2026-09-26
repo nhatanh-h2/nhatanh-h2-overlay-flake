@@ -1,6 +1,7 @@
 final: prev: {
   oapi-gen-cli-fixed = prev.callPackage ./packages/openapi-generator { };
   sea-orm-cli-fixed = prev.callPackage ./packages/sea-orm-cli.nix { };
+  sea-orm-cli-2-fixed = prev.callPackage ./packages/sea-orm-cli-2.nix { };
   cargo-llvm-cov = prev.callPackage ./packages/cargo-llvm-cov {
   };
 

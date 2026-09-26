@@ -2,27 +2,44 @@
   pkgs,
 }:
 let
-  # Wraps a shell derivation with a `withPackages` helper so consumers can write
+  # Wraps a shell derivation with `withPackages` / `withoutPackages` helpers so consumers can write
   #   shell.withPackages [ pkgs.cachix ]
   #   shell.withPackages (pkgs: [ pkgs.cachix ])   # pkgs here is the overlaid nixpkgs
+  #   shell.withoutPackages (pkgs: [ pkgs.sea-orm-cli-fixed ])
   # instead of spelling out the `overrideAttrs` dance. The result is wrapped again,
   # so calls can be chained.
-  withPackagesHelper =
+  withHelpers =
     shell:
+    let
+      resolve = packages: if builtins.isFunction packages then packages pkgs else packages;
+    in
     shell
     // {
       withPackages =
         extraPackages:
-        withPackagesHelper (
+        withHelpers (
           shell.overrideAttrs (old: {
-            buildInputs =
-              old.buildInputs or [ ]
-              ++ (if builtins.isFunction extraPackages then extraPackages pkgs else extraPackages);
+            buildInputs = old.buildInputs or [ ] ++ resolve extraPackages;
+          })
+        );
+
+      # Packages are matched by their store path, so the exact derivation used by the
+      # shell has to be passed (e.g. `pkgs.sea-orm-cli-fixed` from the overlaid nixpkgs).
+      withoutPackages =
+        removedPackages:
+        let
+          removedPaths = map (p: p.outPath) (resolve removedPackages);
+          keep = p: !(builtins.elem (p.outPath or null) removedPaths);
+        in
+        withHelpers (
+          shell.overrideAttrs (old: {
+            buildInputs = builtins.filter keep (old.buildInputs or [ ]);
+            nativeBuildInputs = builtins.filter keep (old.nativeBuildInputs or [ ]);
           })
         );
     };
 
-  mkShell = args: withPackagesHelper (pkgs.mkShell args);
+  mkShell = args: withHelpers (pkgs.mkShell args);
 in
 {
   rustShells =

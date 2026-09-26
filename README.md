@@ -65,6 +65,9 @@ Currently the substituter in use is the main maintainer's own Cachix cache which
         # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell.withPackages [ pkgs.cachix ];
         # it also accepts a function taking the overlaid nixpkgs, and the result can be chained:
         # devShells.default = (nhatanh-h2-overlay.devShells.${system}.goShell.withPackages (pkgs: [ pkgs.cachix ])).withPackages [ pkgs.jq ];
+        # `withoutPackages` removes packages from a predefined shell, and can be chained with `withPackages`:
+        # devShells.default = nhatanh-h2-overlay.devShells.${system}.rustShells.stable.withoutPackages (pkgs: [ pkgs.sea-orm-cli-fixed ]);
+        # devShells.default = (nhatanh-h2-overlay.devShells.${system}.rustShells.stable.withoutPackages [ pkgs.sea-orm-cli-fixed ]).withPackages [ pkgs.sea-orm-cli-2-fixed ];
         # or the escape hatch, for anything beyond adding packages:
         # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell.overrideAttrs (old: { shellHook = old.shellHook + "..."; });
       }
