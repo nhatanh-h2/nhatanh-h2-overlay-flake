@@ -1,12 +1,12 @@
 # Overview
-A while ago, in our BE team at ${CORP}, there was an issue with the derivation for Linh's fork of OpenAPI Generator: on different platforms, the Maven builder in nixpkgs can have different mvnHashes for the vendored dependencies. The fix was simple: just introducing a map from each `${system}` to the corresponding vendor hash.
+A while ago, in our BE team at H2, there was an issue with the derivation for Linh's fork of OpenAPI Generator: on different platforms, the Maven builder in nixpkgs can have different mvnHashes for the vendored dependencies. The fix was simple: just introducing a map from each `${system}` to the corresponding vendor hash.
 
 Nevertheless, it was a pain and also rather error prone to update every repo with this same nix expression, and it's not just this fix either, we need to do this every time we need to update the hashes for OpenAPI Generator, or any other forked and customized dependency we have for that matter.
  There's also a problem with how many packages distribution maintainers (nixpkgs included) haven't been updating Go's compiler and toolchain version as often as we require. The best practice in other organizations using Nix is, we should make an overlay containing every required customization not (currently) present in nixpkgs, and change our existing flakes to make use of that overlay as an input instead so everytime we need to update a customized dependency, we'll just have to update the overlay and bump its version in other repos with a simple nix flake update ${OUR_OVERLAY}.
 
 Another recurring problem is, whenever a new team member is onboarding, especially part timers who also have works and already set up their local environment for those, there's always bound to be some mismatchs between different development contexts, e.g. different versions of the same development tool. There's no "it doesn't work on my machine" anymore if we have standardized development environments that can be exactly reproduced on different local development machines. This is exactly the gateway that draws so many people into nix: hermetic, separate and reproducible development environments with nix shells.
 
-This repository is that overlay plus the standardized development shell derivations, currently just for ${CORP} BE development, but maintainers are open to extend the scope to other engineering contexts (FE, AI, QA, `{DEV,ML}{Sec,Ops}`) too.
+This repository is that overlay plus the standardized development shell derivations, currently just for H2 BE development, but maintainers are open to extend the scope to other engineering contexts (FE, AI, QA, `{DEV,ML}{Sec,Ops}`) too.
 
 ## A note on the Cachix substituter
 A substituter basically a hash-addressed cache: as every artifact in nix is uniquely identified by the inputs used to build it (which are also artifact in nix), we can address an artifact by the hash of its "ingredients", which is why build products in nix are always prefixed by a hash string. A substituter just takes advantage of this property: if someone already built the derivation and we as the consumer of it already have the hash, we can look it up using that hash in a shared store and "substitute" what we found as the build product, instead of redundantly doing the work all over again. For our usecase, the substituter acts mostly as a binary cache, or maybe similar to a "binary package distribution" that other Linux distros e.g. Debian provide: a builder just builds the packages once, and users of the distro just pull the build products.
@@ -19,15 +19,19 @@ Currently the substituter in use is the main maintainer's own Cachix cache which
 
   nixConfig = {
     # Using overlay's substituter (binary cache) to avoid building everything from scratch
-    extra-substituters = "https://nhatanh-h2.cachix.org";
+    extra-substituters = [
+      "https://nhatanh-h2.cachix.org"
+      "https://attic.toneriko.top/h2"
+    ];
     extra-trusted-public-keys = [
       "nhatanh-h2.cachix.org-1:iNzE+GWK6MCVXo+equPTQj2OCMmclhx6xTakVy3NXbk="
+      "h2:ZVU4nuYpuN5Rkdspf/t6f8Maug5Bkn1BVOeNhM415aQ="
     ];
   };
 
   inputs = {
-    nhatanh-h2-overlay = {
-      url = "git+ssh://git@github.com/nhatanh-h2/nhatanh-h2-overlay-flake?ref=main";
+    h2-overlay = {
+      url = "git+ssh://git@github.com/nhatanh-h2/h2-overlay-flake?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -38,7 +42,7 @@ Currently the substituter in use is the main maintainer's own Cachix cache which
   outputs =
     {
       self,
-      nhatanh-h2-overlay,
+      h2-overlay,
       nixpkgs,
       flake-utils,
       ...
@@ -48,28 +52,28 @@ Currently the substituter in use is the main maintainer's own Cachix cache which
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ nhatanh-h2-overlay.overlays.${system}.default ];
+          overlays = [ h2-overlay.overlays.${system}.default ];
         };
         # overlaid nixpkgs is also exposed as a package in the flake's output:
-        # pkgs = nhatanh-h2-overlay.packages.${system}.pkgs;
+        # pkgs = h2-overlay.packages.${system}.pkgs;
       in
       {
         packages.default = pkgs.mkDerivation {...};
 
         devShells.default = pkgs.mkShell {...};
         # or using one of the predefined shells as default
-        # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell;
-        # devShells.default = nhatanh-h2-overlay.devShells.${system}.rustShells.stable;
+        # devShells.default = h2-overlay.devShells.${system}.goShell;
+        # devShells.default = h2-overlay.devShells.${system}.rustShells.stable;
         # it's also possible to customize your own shell based on a predefined shell,
         # every predefined shell has a `withPackages` helper that appends to its buildInputs:
-        # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell.withPackages [ pkgs.cachix ];
+        # devShells.default = h2-overlay.devShells.${system}.goShell.withPackages [ pkgs.cachix ];
         # it also accepts a function taking the overlaid nixpkgs, and the result can be chained:
-        # devShells.default = (nhatanh-h2-overlay.devShells.${system}.goShell.withPackages (pkgs: [ pkgs.cachix ])).withPackages [ pkgs.jq ];
+        # devShells.default = (h2-overlay.devShells.${system}.goShell.withPackages (pkgs: [ pkgs.cachix ])).withPackages [ pkgs.jq ];
         # `withoutPackages` removes packages from a predefined shell, and can be chained with `withPackages`:
-        # devShells.default = nhatanh-h2-overlay.devShells.${system}.rustShells.stable.withoutPackages (pkgs: [ pkgs.sea-orm-cli-fixed ]);
-        # devShells.default = (nhatanh-h2-overlay.devShells.${system}.rustShells.stable.withoutPackages [ pkgs.sea-orm-cli-fixed ]).withPackages [ pkgs.sea-orm-cli-2-fixed ];
+        # devShells.default = h2-overlay.devShells.${system}.rustShells.stable.withoutPackages (pkgs: [ pkgs.sea-orm-cli-fixed ]);
+        # devShells.default = (h2-overlay.devShells.${system}.rustShells.stable.withoutPackages [ pkgs.sea-orm-cli-fixed ]).withPackages [ pkgs.sea-orm-cli-2-fixed ];
         # or the escape hatch, for anything beyond adding packages:
-        # devShells.default = nhatanh-h2-overlay.devShells.${system}.goShell.overrideAttrs (old: { shellHook = old.shellHook + "..."; });
+        # devShells.default = h2-overlay.devShells.${system}.goShell.overrideAttrs (old: { shellHook = old.shellHook + "..."; });
       }
     );
 }
